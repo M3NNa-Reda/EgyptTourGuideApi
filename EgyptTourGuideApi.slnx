@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TourEgypt.API/TourEgypt.API.csproj" />
+  <Project Path="TourEgypt.Core/TourEgypt.Core.csproj" />
+  <Project Path="TourEgypt.Data/TourEgypt.Data.csproj" />
+  <Project Path="TourEgypt.Infrastructure/TourEgypt.Infrastructure.csproj" />
+</Solution>
