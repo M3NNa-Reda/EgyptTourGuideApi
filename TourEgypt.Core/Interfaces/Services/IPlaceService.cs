@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TourEgypt.Core.DTOs.Place;
@@ -15,7 +15,7 @@ namespace TourEgypt.Core.Interfaces.Services
 
         Task<PlaceDetailsDto?> GetPlaceByIdAsync(int id);
 
-        Task CreatePlaceAsync(SavePlaceDto placeDto);
+        Task<int> CreatePlaceAsync(SavePlaceDto placeDto);
 
         Task UpdatePlaceAsync(int id, SavePlaceDto placeDto);
 

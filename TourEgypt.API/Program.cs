@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TourEgypt.API.Middlewares;
 using TourEgypt.Core;
 using TourEgypt.Core.Common;
 using TourEgypt.Core.Entities;
@@ -120,11 +121,10 @@ namespace TourEgypt.API
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            // Determines which endpoint will handle the request
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
-            // Checks if the user is authorized to access the selected endpoint
-            // so it must come after routing 
+           
             
             app.MapControllers();
 

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,7 +31,13 @@ namespace TourEgypt.Infrastructure.Mapping
             .ForMember(dest => dest.FullName,
                 opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
 
-            CreateMap<ApplicationUser, UserProfileDto>();
+            CreateMap<ApplicationUser, UserProfileDto>()
+             .ForMember(dest => dest.FullName,
+                 opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
+             .ForMember(dest => dest.SavedPlacesCount,
+                 opt => opt.MapFrom(src => src.Favorites.Count))
+             .ForMember(dest => dest.ReviewsCount,
+                 opt => opt.MapFrom(src => src.Reviews.Count));
 
             // Review
             //CreateMap<Review, ReviewDto>();

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -34,6 +34,9 @@ namespace TourEgypt.Infrastructure.Services
             if (maxDistanceInKm <= 0)
                 maxDistanceInKm = 10;
 
+            if (maxDistanceInKm > 100)
+                throw new ArgumentException("Maximum distance is 100 km.");
+
             var places = await _unitOfWork.Places
                 .GetNearbyAsync(latitude, longitude, maxDistanceInKm);
 
@@ -62,11 +65,17 @@ namespace TourEgypt.Infrastructure.Services
         public async Task<PlaceDetailsDto?> GetPlaceByIdAsync(int id)
         {
             var place = await _unitOfWork.Places.GetByIdAsync(id);
+
+            if (place == null)
+                throw new KeyNotFoundException("Place not found");
+
             return _mapper.Map<PlaceDetailsDto>(place);
         }
 
         public async Task<IReadOnlyList<PlaceCardDto>> GetPlacesByCategoryAsync(int categoryId, int page, int pageSize)
         {
+            if (categoryId <= 0)
+                throw new ArgumentException("Invalid category.");
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 10;
             var places = await _unitOfWork.Places.GetByCategoryAsync(categoryId, page, pageSize);
@@ -75,15 +84,18 @@ namespace TourEgypt.Infrastructure.Services
 
         public async Task<IReadOnlyList<PlaceCardDto>> SearchPlacesAsync(string keyword, int count)
         {
+            if (string.IsNullOrWhiteSpace(keyword))
+                throw new ArgumentException("Keyword is required.");
             if (count <= 0) count = 5;
             var places = await _unitOfWork.Places.SearchAsync(keyword, count);
             return _mapper.Map<IReadOnlyList<PlaceCardDto>>(places);
         }
-        public async Task CreatePlaceAsync(SavePlaceDto placeDto)
+        public async Task<int> CreatePlaceAsync(SavePlaceDto placeDto)
         {
             var placeEntity = _mapper.Map<Place>(placeDto);
             await _unitOfWork.Places.AddAsync(placeEntity);
             await _unitOfWork.CompleteAsync();
+            return placeEntity.PlaceId;
 
         }
 

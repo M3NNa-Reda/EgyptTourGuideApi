@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -28,8 +28,24 @@ namespace TourEgypt.Infrastructure.Services
             _userManager = userManager;
             _unitOfWork = unitOfWork;
         }
+        private async Task<ApplicationUser> GetCurrentUserAsync()
+        {
+            var userId = GetCurrentUserId();
 
-        
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
+
+            return user;
+        }
+        public async Task<UserProfileDto> GetProfileAsync()
+        {
+            var user = await GetCurrentUserAsync();
+
+            return _mapper.Map<UserProfileDto>(user);
+        }
+
         private int GetCurrentUserId()
         {
             var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -41,31 +57,16 @@ namespace TourEgypt.Infrastructure.Services
 
             return userId;
         }
-        public async Task<UserProfileDto> GetProfileAsync()
-        {
-            var userId = GetCurrentUserId();
-            var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (user == null)
-            {
-                throw new KeyNotFoundException("User not found.");
-            }
-
-            
-            return _mapper.Map<UserProfileDto>(user);
-        }
 
         public async Task UpdateProfileAsync(UpdateProfileDto dto)
         {
-            var userId = GetCurrentUserId();
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-
-            if (user == null)
-                throw new KeyNotFoundException("User not found.");
+            var user = await GetCurrentUserAsync();
 
             if (!string.IsNullOrWhiteSpace(dto.FullName))
             {
-                var names = dto.FullName.Trim().Split(" ", 2);
+                var names = dto.FullName.Trim().Split(' ', 2);
+
                 user.FirstName = names[0];
                 user.LastName = names.Length > 1 ? names[1] : string.Empty;
             }
@@ -75,52 +76,85 @@ namespace TourEgypt.Infrastructure.Services
             user.City = dto.City ?? user.City;
 
             var result = await _userManager.UpdateAsync(user);
+
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new InvalidOperationException($"Failed to update profile: {errors}");
+
+                throw new InvalidOperationException(errors);
             }
         }
-        
 
         public async Task UpdateProfileImageAsync(IFormFile image)
         {
-            var userId = GetCurrentUserId();
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-
-            if (user == null)
-                throw new KeyNotFoundException("User not found.");
+            var user = await GetCurrentUserAsync();
 
             if (image == null || image.Length == 0)
-                throw new ArgumentException("Invalid image file.");
+                throw new ArgumentException("Image is required.");
 
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "profiles");
+            var extension = Path.GetExtension(image.FileName).ToLower();
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+
+            if (!allowedExtensions.Contains(extension))
+                throw new ArgumentException("Only JPG and PNG images are allowed.");
+
+            if (image.Length > 2 * 1024 * 1024)
+                throw new ArgumentException("Maximum image size is 2 MB.");
+
+            var folderPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "images",
+                "profiles");
+
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 
-            var extension = Path.GetExtension(image.FileName);
-            var fileName = $"user_{userId}_{Guid.NewGuid()}{extension}";
+            var fileName = $"user_{user.Id}_{Guid.NewGuid()}{extension}";
+
             var filePath = Path.Combine(folderPath, fileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(stream);
-            }
+            using var stream = new FileStream(filePath, FileMode.Create);
+
+            await image.CopyToAsync(stream);
 
             user.ProfileImageUrl = $"/images/profiles/{fileName}";
-            await _userManager.UpdateAsync(user);
-        }
 
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+
+                throw new InvalidOperationException(errors);
+            }
+        }
         public async Task DeleteProfileImageAsync()
         {
-            var userId = GetCurrentUserId();
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await GetCurrentUserAsync();
 
-            if (user == null)
-                throw new KeyNotFoundException("User not found.");
+            if (!string.IsNullOrEmpty(user.ProfileImageUrl))
+            {
+                var imagePath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    user.ProfileImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+
+                if (File.Exists(imagePath))
+                    File.Delete(imagePath);
+            }
 
             user.ProfileImageUrl = null;
-            await _userManager.UpdateAsync(user);
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+
+                throw new InvalidOperationException(errors);
+            }
         }
         public async Task SaveUserInterestsAsync(List<int> interestIds)
         {
