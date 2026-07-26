@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TourEgypt.Core.DTOs.Place;
 using TourEgypt.Core.Interfaces.Services;
