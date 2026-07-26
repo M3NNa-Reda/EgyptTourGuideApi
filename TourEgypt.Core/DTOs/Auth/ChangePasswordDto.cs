@@ -14,7 +14,7 @@ namespace TourEgypt.Core.DTOs.Auth
 
         [Required]
         [Compare(nameof(Password))]
-        public string ConfirmPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
 
 
     }
