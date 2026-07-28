@@ -41,11 +41,11 @@ namespace TourEgypt.API
 
             builder.Services.AddSingleton(jwtOptions);
 
-            
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
             {
                 options.Lockout.AllowedForNewUsers = true;
-                options.Lockout.DefaultLockoutTimeSpan= TimeSpan.FromMinutes(5);
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
 
                 options.Password.RequireDigit = true;
@@ -53,7 +53,7 @@ namespace TourEgypt.API
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
-                
+
 
                 options.User.RequireUniqueEmail = true;
             })
@@ -76,13 +76,13 @@ namespace TourEgypt.API
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Signingkey)),
-                        ClockSkew = TimeSpan.Zero 
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
 
             builder.Services.AddScoped<IPlaceRepository, PlaceRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
+
             builder.Services.AddScoped<IPlaceService, PlaceService>();
 
             builder.Services.AddScoped<ITokenService, TokenService>();
@@ -90,17 +90,18 @@ namespace TourEgypt.API
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
 
+            builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
+            builder.Services.AddScoped<IFavouriteService, FavouriteService>();
+            builder.Services.AddScoped < ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+
 
 
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<TourEgyptProfile>();
             });
-
-
-
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
@@ -111,13 +112,6 @@ namespace TourEgypt.API
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
                 await IdentitySeeder.SeedAsync(roleManager, userManager);
-            }
-
-            //catches exceptions thrown in the following middlewares so it must come early
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
