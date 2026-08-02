@@ -10,6 +10,8 @@ namespace TourEgypt.Core.Interfaces.Repositories
         IPlaceRepository Places { get; }
         IGenericRepository<UserCategory> UserInterests { get; }
 
+        IFavouriteRepository Favourites { get; }
+
         Task<int> CompleteAsync(); 
     }
 }

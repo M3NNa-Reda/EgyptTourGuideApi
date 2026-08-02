@@ -9,16 +9,13 @@ namespace TourEgypt.Infrastructure.Services
 {
     public class FavouriteService : IFavouriteService
     {
-        private readonly IFavouriteRepository _favouriteRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public FavouriteService(
-            IFavouriteRepository favouriteRepository,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor)
         {
-            _favouriteRepository = favouriteRepository;
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -37,37 +34,23 @@ namespace TourEgypt.Infrastructure.Services
         public async Task AddFavouriteAsync(int placeId)
         {
             var userId = GetUserId();
-
-            var favourite = new Favorite
-            {
-                UserId = userId,
-                PlaceId = placeId
-            };
-
-            await _favouriteRepository.AddAsync(favourite);
+            var favourite = new Favorite { UserId = userId, PlaceId = placeId };
+            await _unitOfWork.Favourites.AddAsync(favourite);
             await _unitOfWork.CompleteAsync();
         }
 
         public async Task RemoveFavouriteAsync(int placeId)
         {
             var userId = GetUserId();
-
-            var favourite = new Favorite
-            {
-                UserId = userId,
-                PlaceId = placeId
-            };
-
-            await _favouriteRepository.RemoveAsync(favourite);
+            var favourite = new Favorite { UserId = userId, PlaceId = placeId };
+            await _unitOfWork.Favourites.RemoveAsync(favourite);
             await _unitOfWork.CompleteAsync();
         }
 
         public async Task<IEnumerable<PlaceCardDto>> GetAllFavouritesAsync()
         {
             var userId = GetUserId();
-
-            var favourites = await _favouriteRepository.GetAllByUserIdAsync(userId);
-
+            var favourites = await _unitOfWork.Favourites.GetAllByUserIdAsync(userId);
             return favourites.Select(f => new PlaceCardDto
             {
                 Id = f.Place.PlaceId,
@@ -80,7 +63,7 @@ namespace TourEgypt.Infrastructure.Services
         public async Task<bool> IsFavouriteAsync(int placeId)
         {
             var userId = GetUserId();
-            return await _favouriteRepository.IsFavouriteAsync(userId, placeId);
+            return await _unitOfWork.Favourites.IsFavouriteAsync(userId, placeId);
         }
     }
 }
