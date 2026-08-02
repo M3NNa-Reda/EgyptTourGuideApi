@@ -15,9 +15,9 @@ namespace TourEgypt.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var categories = _categoryService.GetCategories();
+            var categories = await _categoryService.GetCategoriesAsync();
             return Ok(categories);
         }
     }

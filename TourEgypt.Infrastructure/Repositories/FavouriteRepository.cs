@@ -37,5 +37,11 @@ namespace TourEgypt.Infrastructure.Repositories
             return await _context.Favorites
                 .AnyAsync(f => f.UserId == userId && f.PlaceId == placeId);
         }
+
+        public async Task<int> CountByUserIdAsync(int userId)
+        {
+            return await _context.Favorites
+                .CountAsync(f => f.UserId == userId);
+        }
     }
 }

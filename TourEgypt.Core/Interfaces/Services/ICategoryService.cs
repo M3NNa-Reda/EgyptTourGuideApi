@@ -7,6 +7,6 @@ namespace TourEgypt.Core.Interfaces.Services
 {
     public interface ICategoryService
     {
-        IEnumerable<CategoryDto> GetCategories();
+        Task<IEnumerable<CategoryDto>> GetCategoriesAsync();
     }
 }

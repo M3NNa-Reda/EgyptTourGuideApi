@@ -17,15 +17,15 @@ namespace TourEgypt.Infrastructure.Services
             _categoryRepository = categoryRepository;
         }
 
-        public IEnumerable<CategoryDto> GetCategories()
+        public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync()
         {
-            var categories = _categoryRepository.GetAllAsync().Result;
+            var categories = await _categoryRepository.GetAllAsync();
             return categories.Select(c => new CategoryDto
             {
                 CategoryId = c.CategoryId,
                 Name = c.Name,
                 IconUrl = c.IconUrl
             });
-    }
+        }
     }
 }

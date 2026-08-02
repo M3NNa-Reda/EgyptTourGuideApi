@@ -13,8 +13,10 @@ namespace TourEgypt.Data.Configurations
         {
             builder.HasKey(c => c.CategoryId);
 
-            builder.Property(c => c.Name).IsRequired().HasMaxLength(100);   
-            
+            builder.Property(c => c.Name).IsRequired().HasMaxLength(100);
+            builder.HasIndex(c => c.Name).IsUnique();
+
+            builder.Property(c => c.IconUrl).IsRequired().HasMaxLength(500);            
         }
     }
 }
