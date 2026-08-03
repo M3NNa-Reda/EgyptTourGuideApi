@@ -43,7 +43,10 @@ namespace TourEgypt.Infrastructure.Services
         {
             var user = await GetCurrentUserAsync();
 
-            return _mapper.Map<UserProfileDto>(user);
+            var profile = _mapper.Map<UserProfileDto>(user);
+            profile.SavedPlacesCount = await _unitOfWork.Favourites.CountByUserIdAsync(user.Id);
+
+            return profile;
         }
 
         private int GetCurrentUserId()

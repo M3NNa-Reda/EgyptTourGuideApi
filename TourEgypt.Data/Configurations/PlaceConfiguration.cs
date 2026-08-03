@@ -26,6 +26,11 @@ namespace TourEgypt.Data.Configurations
                    .WithMany(c => c.Places)
                    .HasForeignKey(p => p.CityId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.Category)
+                   .WithMany(c => c.Places)
+                   .HasForeignKey(p => p.CategoryId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

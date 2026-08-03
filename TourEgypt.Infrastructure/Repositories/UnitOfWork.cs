@@ -15,11 +15,15 @@ namespace TourEgypt.Infrastructure.Repositories
         public IPlaceRepository Places { get; private set; }
         public IGenericRepository<UserCategory> UserInterests { get; private set; }
 
+        public IFavouriteRepository Favourites { get; private set; }
+
         public UnitOfWork(AppDbContext context, IPlaceRepository placeRepository)
         {
             _context = context;
             Places = placeRepository;
             UserInterests = new GenericRepository<UserCategory>(_context);
+            Favourites = new FavouriteRepository(_context);
+
         }
 
         public async Task<int> CompleteAsync()
