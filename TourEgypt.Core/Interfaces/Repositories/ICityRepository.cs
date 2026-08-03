@@ -7,6 +7,6 @@ namespace TourEgypt.Core.Interfaces.Repositories
 {
     public interface ICityRepository:IGenericRepository<City>
     {
-        Task<IReadOnlyList<City>> GetTopCategoriesAsync(int count);
+        Task<IReadOnlyList<City>> GetCategoriesAsync(int count);
     }
 }

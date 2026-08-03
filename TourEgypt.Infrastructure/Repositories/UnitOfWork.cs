@@ -16,13 +16,20 @@ namespace TourEgypt.Infrastructure.Repositories
         public IGenericRepository<UserCategory> UserInterests { get; private set; }
 
         public IFavouriteRepository Favourites { get; private set; }
+        public ICategoryRepository Categories { get; private set; }
 
-        public UnitOfWork(AppDbContext context, IPlaceRepository placeRepository)
+
+        public UnitOfWork(AppDbContext context, 
+            IPlaceRepository placeRepository,
+            ICategoryRepository categoryRepository,
+            IFavouriteRepository favouriteRepository
+            )
         {
             _context = context;
             Places = placeRepository;
             UserInterests = new GenericRepository<UserCategory>(_context);
-            Favourites = new FavouriteRepository(_context);
+            Favourites = favouriteRepository;
+            Categories= categoryRepository;
 
         }
 

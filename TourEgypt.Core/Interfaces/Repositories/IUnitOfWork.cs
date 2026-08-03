@@ -11,6 +11,7 @@ namespace TourEgypt.Core.Interfaces.Repositories
         IGenericRepository<UserCategory> UserInterests { get; }
 
         IFavouriteRepository Favourites { get; }
+        ICategoryRepository Categories { get; }
 
         Task<int> CompleteAsync(); 
     }
