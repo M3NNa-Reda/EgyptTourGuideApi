@@ -23,21 +23,21 @@ namespace TourEgypt.Infrastructure.Services
             _mapper = mapper;
         }
 
-        async Task<IEnumerable<CategoryDto>> ICategoryService.GetCategoriesAsync(int count)
+        public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync(int count)
         {
             var categories = await _unitOfWork.Categories.GetCategoriesAsync(count);
 
             return _mapper.Map<IEnumerable<CategoryDto>>(categories);
         }
-        async Task<IEnumerable<CategoryDto>> ICategoryService.GetAllCategoriesAsync()
+        public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();
 
             return _mapper.Map<IEnumerable<CategoryDto>>(categories);
         }
-        
 
-        async Task<int> ICategoryService.CreateCategoryAsync(CategoryDto createDto)
+
+        public async Task<int> CreateCategoryAsync(CategoryDto createDto)
         {
             var categoryEntity = _mapper.Map<Category>(createDto);
             await _unitOfWork.Categories.AddAsync(categoryEntity);
@@ -46,7 +46,7 @@ namespace TourEgypt.Infrastructure.Services
 
 
         }
-        async Task ICategoryService.UpdateCategoryAsync(int id, CategoryDto updateDto)
+        public async Task UpdateCategoryAsync(int id, CategoryDto updateDto)
         {
             var category = await _unitOfWork.Categories.GetByIdAsync(id);
 
@@ -61,7 +61,7 @@ namespace TourEgypt.Infrastructure.Services
         }
 
 
-        async Task ICategoryService.DeleteCategoryAsync(int id)
+        public async Task DeleteCategoryAsync(int id)
         {
             var category = await _unitOfWork.Categories.GetByIdAsync(id);
 

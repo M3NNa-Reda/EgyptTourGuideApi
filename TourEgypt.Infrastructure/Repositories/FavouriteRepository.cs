@@ -5,24 +5,13 @@ using TourEgypt.Data.Context;
 
 namespace TourEgypt.Infrastructure.Repositories
 {
-    public class FavouriteRepository : IFavouriteRepository
+    public class FavouriteRepository : GenericRepository<Favorite>, IFavouriteRepository
     {
-        private readonly AppDbContext _context;
-
-        public FavouriteRepository(AppDbContext context)
+        public FavouriteRepository(AppDbContext context) : base(context)
         {
-            _context = context;
         }
 
-        public async Task AddAsync(Favorite favourite)
-        {
-            await _context.Favorites.AddAsync(favourite);
-        }
-
-        public async Task RemoveAsync(Favorite favourite)
-        {
-            _context.Favorites.Remove(favourite);
-        }
+       
 
         public async Task<IEnumerable<Favorite>> GetAllByUserIdAsync(int userId)
         {

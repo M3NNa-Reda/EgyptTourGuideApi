@@ -25,7 +25,7 @@ namespace TourEgypt.Infrastructure.Mapping
             CreateMap<Category, CategoryDto>().ReverseMap();
 
             // City
-            CreateMap<City, CityDto>();
+            CreateMap<City, CityDto>().ReverseMap();
             //ApplicationUser
             CreateMap<ApplicationUser, UserDto>()
             .ForMember(dest => dest.FullName,
