@@ -22,7 +22,7 @@ namespace TourEgypt.Infrastructure.Mapping
             CreateMap<SavePlaceDto, Place>();
 
             // Category
-            CreateMap<Category, CategoryDto>();
+            CreateMap<Category, CategoryDto>().ReverseMap();
 
             // City
             CreateMap<City, CityDto>();

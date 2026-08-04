@@ -14,9 +14,10 @@ namespace TourEgypt.Infrastructure.Repositories
         {
         }
 
-        public async Task<IReadOnlyList<Category>> GetTopCategoriesAsync(int count)
+        public async Task<IReadOnlyList<Category>> GetCategoriesAsync(int count)
         {
             return await _context.Categories
+                .AsNoTracking()
                 .Take(count)
                 .ToListAsync();
         }

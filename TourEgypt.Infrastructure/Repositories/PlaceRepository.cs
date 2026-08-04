@@ -33,10 +33,7 @@ namespace TourEgypt.Infrastructure.Repositories
 
             
         
-
-        
-        
-
+                
         public async Task<IReadOnlyList<Place>> SearchAsync(string keyword, int count)
         {
 

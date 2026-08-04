@@ -112,7 +112,7 @@ namespace TourEgypt.API
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
 
-
+            builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
             builder.Services.AddScoped<IFavouriteService, FavouriteService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
