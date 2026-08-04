@@ -75,7 +75,7 @@ namespace TourEgypt.Infrastructure.Services
             _unitOfWork.Places.Update(place);
 
             var favourite = new Favorite { UserId = userId, PlaceId = placeId };
-            await _unitOfWork.Favourites.RemoveAsync(favourite);
+             _unitOfWork.Favourites.Delete(favourite);
             await _unitOfWork.CompleteAsync();
         }
 

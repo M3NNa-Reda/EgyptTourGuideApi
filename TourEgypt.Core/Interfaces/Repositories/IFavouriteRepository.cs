@@ -5,10 +5,9 @@ using TourEgypt.Core.Entities;
 
 namespace TourEgypt.Core.Interfaces.Repositories
 {
-    public interface IFavouriteRepository
+    public interface IFavouriteRepository : IGenericRepository<Favorite>
     {
-        Task AddAsync(Favorite favourite);
-        Task RemoveAsync(Favorite favourite);
+
         Task<IEnumerable<Favorite>> GetAllByUserIdAsync(int userId);
         Task<bool> IsFavouriteAsync(int userId, int placeId);
         Task<int> CountByUserIdAsync(int userId);

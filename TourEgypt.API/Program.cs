@@ -12,6 +12,7 @@ using TourEgypt.Core.Interfaces.Repositories;
 using TourEgypt.Core.Interfaces.Services;
 using TourEgypt.Data.Context;
 using TourEgypt.Infrastructure;
+using TourEgypt.Infrastructure.BackgroundJobs;
 using TourEgypt.Infrastructure.Mapping;
 using TourEgypt.Infrastructure.Repositories;
 using TourEgypt.Infrastructure.Seed;
@@ -114,8 +115,13 @@ namespace TourEgypt.API
 
             builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
             builder.Services.AddScoped<IFavouriteService, FavouriteService>();
+
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+            builder.Services.AddScoped<ICityRepository, CityRepository>();
+            builder.Services.AddScoped<ICityService, CityService>();
+            builder.Services.AddHostedService<CityMetricsUpdateJob>();
 
 
             builder.Services.AddAutoMapper(cfg =>

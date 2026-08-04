@@ -17,20 +17,22 @@ namespace TourEgypt.Infrastructure.Repositories
 
         public IFavouriteRepository Favourites { get; private set; }
         public ICategoryRepository Categories { get; private set; }
+        public ICityRepository Cities { get; private set; }
+
 
 
         public UnitOfWork(AppDbContext context, 
             IPlaceRepository placeRepository,
             ICategoryRepository categoryRepository,
-            IFavouriteRepository favouriteRepository
-            )
+            IFavouriteRepository favouriteRepository,
+            ICityRepository cityRepository)
         {
             _context = context;
             Places = placeRepository;
             UserInterests = new GenericRepository<UserCategory>(_context);
             Favourites = favouriteRepository;
-            Categories= categoryRepository;
-
+            Categories = categoryRepository;
+            Cities = cityRepository;
         }
 
         public async Task<int> CompleteAsync()
