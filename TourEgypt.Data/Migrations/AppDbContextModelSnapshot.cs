@@ -370,6 +370,9 @@ namespace TourEgypt.Data.Migrations
                     b.Property<int?>("DurationInDays")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FavoriteCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -389,9 +392,6 @@ namespace TourEgypt.Data.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("ReviewsCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("favoriteCount")
                         .HasColumnType("int");
 
                     b.HasKey("PlaceId");

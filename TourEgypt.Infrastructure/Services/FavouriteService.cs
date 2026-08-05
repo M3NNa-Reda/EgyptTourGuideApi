@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using TourEgypt.Core.DTOs.Place;
 using TourEgypt.Core.Entities;
 using TourEgypt.Core.Interfaces.Repositories;
@@ -10,25 +11,21 @@ namespace TourEgypt.Infrastructure.Services
     public class FavouriteService : IFavouriteService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICurrentUserService _currentUserService;
 
-        public FavouriteService(
-            IUnitOfWork unitOfWork,
-            IHttpContextAccessor httpContextAccessor)
+        public FavouriteService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             _unitOfWork = unitOfWork;
-            _httpContextAccessor = httpContextAccessor;
+            _currentUserService = currentUserService;
         }
 
         private int GetUserId()
         {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User
-                .FindFirst(ClaimTypes.NameIdentifier);
+            var userId = _currentUserService.UserId;
+            if (!userId.HasValue)
+                throw new UnauthorizedAccessException("User is not authenticated.");
 
-            if (userIdClaim == null)
-                throw new UnauthorizedAccessException("User ID not found in token.");
-
-            return int.Parse(userIdClaim.Value);
+            return userId.Value;
         }
 
         public async Task AddFavouriteAsync(int placeId)
@@ -38,19 +35,20 @@ namespace TourEgypt.Infrastructure.Services
 
             var userId = GetUserId();
 
-            var place = await _unitOfWork.Places.GetByIdAsync(placeId);
-            if (place == null)
-                throw new KeyNotFoundException("Place not found.");
-
             var alreadyFavourite = await _unitOfWork.Favourites.IsFavouriteAsync(userId, placeId);
             if (alreadyFavourite)
                 return;
 
-            place.favoriteCount += 1;
+            var place = await _unitOfWork.Places.GetByIdAsync(placeId);
+            if (place == null)
+                throw new KeyNotFoundException("Place not found.");
+
+            place.FavoriteCount += 1;
             _unitOfWork.Places.Update(place);
 
             var favourite = new Favorite { UserId = userId, PlaceId = placeId };
             await _unitOfWork.Favourites.AddAsync(favourite);
+
             await _unitOfWork.CompleteAsync();
         }
 
@@ -61,21 +59,20 @@ namespace TourEgypt.Infrastructure.Services
 
             var userId = GetUserId();
 
-            var isFavourite = await _unitOfWork.Favourites.IsFavouriteAsync(userId, placeId);
-            if (!isFavourite)
+            var favourites = await _unitOfWork.Favourites.GetAllByUserIdAsync(userId);
+            var favourite = favourites.FirstOrDefault(f => f.PlaceId == placeId);
+
+            if (favourite == null)
                 throw new KeyNotFoundException("Favourite not found.");
 
             var place = await _unitOfWork.Places.GetByIdAsync(placeId);
-            if (place == null)
-                throw new KeyNotFoundException("Place not found.");
+            if (place != null && place.FavoriteCount > 0)
+            {
+                place.FavoriteCount -= 1;
+                _unitOfWork.Places.Update(place);
+            }
 
-            if (place.favoriteCount > 0)
-                place.favoriteCount -= 1;
-
-            _unitOfWork.Places.Update(place);
-
-            var favourite = new Favorite { UserId = userId, PlaceId = placeId };
-             _unitOfWork.Favourites.Delete(favourite);
+            _unitOfWork.Favourites.Delete(favourite);
             await _unitOfWork.CompleteAsync();
         }
 
@@ -83,6 +80,7 @@ namespace TourEgypt.Infrastructure.Services
         {
             var userId = GetUserId();
             var favourites = await _unitOfWork.Favourites.GetAllByUserIdAsync(userId);
+
             return favourites.Select(f => new PlaceCardDto
             {
                 Id = f.Place.PlaceId,

@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using TourEgypt.Core.DTOs.User;
 using TourEgypt.Core.Entities;
 using TourEgypt.Core.Interfaces.Repositories;
@@ -14,16 +15,18 @@ namespace TourEgypt.Infrastructure.Services
 {
     public class UserService : IUserService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(IHttpContextAccessor httpContextAccessor,
+        public UserService(
+            ICurrentUserService currentUserService,
             IMapper mapper,
-            UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork)
+            UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _currentUserService = currentUserService;
             _mapper = mapper;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
@@ -51,14 +54,14 @@ namespace TourEgypt.Infrastructure.Services
 
         private int GetCurrentUserId()
         {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = _currentUserService.UserId;
 
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            if (!userId.HasValue)
             {
                 throw new UnauthorizedAccessException("User is not authenticated or Token is invalid.");
             }
 
-            return userId;
+            return userId.Value;
         }
 
 

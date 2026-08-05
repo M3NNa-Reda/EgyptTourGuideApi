@@ -11,5 +11,6 @@ namespace TourEgypt.Core.Interfaces.Repositories
         Task<IEnumerable<Favorite>> GetAllByUserIdAsync(int userId);
         Task<bool> IsFavouriteAsync(int userId, int placeId);
         Task<int> CountByUserIdAsync(int userId);
+        Task<List<int>> GetUserFavoritePlaceIdsAsync(int userId);
     }
 }

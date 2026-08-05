@@ -18,7 +18,8 @@ namespace TourEgypt.Core.Entities
         public string? CuisineType { get; set; }
         public double AverageRating { get; set; }
         public int ReviewsCount { get; set; }
-        public int favoriteCount { get; set; }
+        public int? FavoriteCount { get; set; }
+
         public int CityId { get; set; }
         public int CategoryId { get; set; }
         public City City { get; set; } = null!;

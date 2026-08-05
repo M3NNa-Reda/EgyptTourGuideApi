@@ -32,5 +32,12 @@ namespace TourEgypt.Infrastructure.Repositories
             return await _context.Favorites
                 .CountAsync(f => f.UserId == userId);
         }
+        public async Task<List<int>> GetUserFavoritePlaceIdsAsync(int userId)
+        {
+            return await _context.Favorites
+                .Where(f => f.UserId == userId)
+                .Select(f => f.PlaceId)
+                .ToListAsync();
+        }
     }
 }

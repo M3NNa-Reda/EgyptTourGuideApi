@@ -12,8 +12,8 @@ using TourEgypt.Data.Context;
 namespace TourEgypt.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260726135019_AddFavouritesCount")]
-    partial class AddFavouritesCount
+    [Migration("20260804232626_UpdateFavoriteCountToNullable")]
+    partial class UpdateFavoriteCountToNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -275,7 +275,8 @@ namespace TourEgypt.Data.Migrations
 
                     b.Property<string>("IconUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -283,6 +284,9 @@ namespace TourEgypt.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CategoryId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -369,6 +373,9 @@ namespace TourEgypt.Data.Migrations
                     b.Property<int?>("DurationInDays")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FavoriteCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -388,9 +395,6 @@ namespace TourEgypt.Data.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("ReviewsCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FavoriteCount")
                         .HasColumnType("int");
 
                     b.HasKey("PlaceId");
@@ -572,7 +576,7 @@ namespace TourEgypt.Data.Migrations
                     b.HasOne("TourEgypt.Core.Entities.Category", "Category")
                         .WithMany("Places")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TourEgypt.Core.Entities.City", "City")

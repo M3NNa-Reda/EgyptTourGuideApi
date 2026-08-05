@@ -390,7 +390,7 @@ namespace TourEgypt.Data.Migrations
                     b.Property<int>("ReviewsCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("favoriteCount")
+                    b.Property<int>("FavoriteCount")
                         .HasColumnType("int");
 
                     b.HasKey("PlaceId");
