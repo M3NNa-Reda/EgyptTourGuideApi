@@ -123,6 +123,8 @@ namespace TourEgypt.API
             builder.Services.AddScoped<ICityService, CityService>();
             builder.Services.AddHostedService<CityMetricsUpdateJob>();
 
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             builder.Services.AddAutoMapper(cfg =>
             {

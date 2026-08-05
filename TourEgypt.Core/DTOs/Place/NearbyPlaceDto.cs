@@ -6,6 +6,7 @@ namespace TourEgypt.Core.DTOs.Place
 {
     public class NearbyPlaceDto
     {
+        public int Id { get; set; }
         public int PlaceId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
