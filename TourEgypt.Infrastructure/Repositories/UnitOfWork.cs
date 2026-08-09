@@ -19,13 +19,16 @@ namespace TourEgypt.Infrastructure.Repositories
         public ICategoryRepository Categories { get; private set; }
         public ICityRepository Cities { get; private set; }
 
+        public ITourRepository Tours { get; private set; }
+
 
 
         public UnitOfWork(AppDbContext context, 
             IPlaceRepository placeRepository,
             ICategoryRepository categoryRepository,
             IFavouriteRepository favouriteRepository,
-            ICityRepository cityRepository)
+            ICityRepository cityRepository,
+            ITourRepository tourRepository)
         {
             _context = context;
             Places = placeRepository;
@@ -33,6 +36,7 @@ namespace TourEgypt.Infrastructure.Repositories
             Favourites = favouriteRepository;
             Categories = categoryRepository;
             Cities = cityRepository;
+            Tours = tourRepository;
         }
 
         public async Task<int> CompleteAsync()

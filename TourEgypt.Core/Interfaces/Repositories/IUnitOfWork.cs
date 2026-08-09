@@ -14,6 +14,8 @@ namespace TourEgypt.Core.Interfaces.Repositories
         ICategoryRepository Categories { get; }
         ICityRepository Cities { get; }
 
+        ITourRepository Tours { get; }
+
 
         Task<int> CompleteAsync(); 
     }
