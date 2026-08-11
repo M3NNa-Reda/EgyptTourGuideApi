@@ -50,13 +50,5 @@ namespace TourEgypt.API.Controllers
 
             return NoContent();
         }
-
-        [HttpPost("interests")]
-        public async Task<IActionResult> SaveUserInterests([FromBody] List<int> interestIds)
-        {
-            await _userService.SaveUserInterestsAsync(interestIds);
-
-            return NoContent();
-        }
     }
 }

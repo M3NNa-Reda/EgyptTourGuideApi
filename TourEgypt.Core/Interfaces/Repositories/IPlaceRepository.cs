@@ -15,9 +15,13 @@ namespace TourEgypt.Core.Interfaces.Repositories
 
         Task<IReadOnlyList<Place>> GetNearbyAsync(double latitude, double longitude, double maxDistanceInKm = 10);
 
-        
-    
 
+        Task<IReadOnlyList<Place>> GetAllPlacesWithReviewsAsync();
+
+        Task<IReadOnlyList<Place>> GetTopPlacesAsync(int page, int pageSize);
+        Task<IReadOnlyList<Place>> GetByCityAsync(int cityId, int page, int pageSize);
         
+
+
     }
 }

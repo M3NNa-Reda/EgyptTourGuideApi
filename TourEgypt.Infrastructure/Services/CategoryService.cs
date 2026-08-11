@@ -39,6 +39,14 @@ namespace TourEgypt.Infrastructure.Services
 
         public async Task<int> CreateCategoryAsync(CategoryDto createDto)
         {
+            if (string.IsNullOrWhiteSpace(createDto.Name))
+                throw new ArgumentException("Category name is required.");
+
+            var categories = await _unitOfWork.Categories.GetAllAsync();
+            var isExist = categories.Any(c => c.Name.Trim().Equals(createDto.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            if (isExist)
+                throw new InvalidOperationException("A category with this name already exists.");
             var categoryEntity = _mapper.Map<Category>(createDto);
             await _unitOfWork.Categories.AddAsync(categoryEntity);
             await _unitOfWork.CompleteAsync();

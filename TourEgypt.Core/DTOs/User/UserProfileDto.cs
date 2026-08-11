@@ -26,7 +26,7 @@ namespace TourEgypt.Core.DTOs.User
         public string? Bio { get; set; }
 
         public string PreferredLanguage { get; set; } = "en";
-
+        public DateTime CreatedAt { get; set; }
         public int SavedPlacesCount { get; set; }
 
         public int ReviewsCount { get; set; }

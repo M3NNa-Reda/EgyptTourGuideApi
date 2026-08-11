@@ -20,5 +20,8 @@ namespace TourEgypt.Core.Interfaces.Services
         Task UpdatePlaceAsync(int id, SavePlaceDto placeDto);
 
         Task DeletePlaceAsync(int id);
+        Task UpdatePlaceMetricsAsync();
+        Task<IReadOnlyList<PlaceCardDto>> GetTopPlacesAsync(int page, int pageSize);
+        Task<IReadOnlyList<PlaceCardDto>> GetPlacesByCityAsync(int cityId, int page, int pageSize);
     }
 }
