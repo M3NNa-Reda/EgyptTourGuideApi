@@ -15,6 +15,12 @@ public class Tour
     public int DurationInHours { get; set; }
     public string TourType { get; set; } = string.Empty;
 
+    public double AverageRating { get; set; }
+    public int ReviewsCount { get; set; }
+
     public int PlaceId { get; set; }
     public Place Place { get; set; } = null!;
+
+
+
 }

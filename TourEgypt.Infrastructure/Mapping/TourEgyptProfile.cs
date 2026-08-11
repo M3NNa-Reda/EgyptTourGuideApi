@@ -22,6 +22,7 @@ namespace TourEgypt.Infrastructure.Mapping
                 .ForMember(dest => dest.DistanceInKm, opt => opt.Ignore());
             CreateMap<SavePlaceDto, Place>();
             CreateMap<Tour, TourDto>();
+            CreateMap<CreateTourDto, Tour>();
 
             // Category
             CreateMap<Category, CategoryDto>().ReverseMap();

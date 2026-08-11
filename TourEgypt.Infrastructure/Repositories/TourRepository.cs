@@ -15,8 +15,10 @@ public class TourRepository : GenericRepository<Tour>, ITourRepository
     public async Task<IReadOnlyList<Tour>> GetByPlaceIdAsync(int placeId)
     {
         return await _context.Tours
-            .AsNoTracking()
-            .Where(t => t.PlaceId == placeId)
-            .ToListAsync();
+         .AsNoTracking()
+         .Where(t => t.PlaceId == placeId)
+         .OrderByDescending(t => t.AverageRating)
+         .ThenByDescending(t => t.ReviewsCount)
+         .ToListAsync();
     }
 }

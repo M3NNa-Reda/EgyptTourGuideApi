@@ -16,7 +16,6 @@ namespace TourEgypt.Core.Interfaces.Repositories
 
         ITourRepository Tours { get; }
 
-
         Task<int> CompleteAsync(); 
     }
 }
