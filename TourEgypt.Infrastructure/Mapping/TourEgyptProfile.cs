@@ -34,16 +34,17 @@ namespace TourEgypt.Infrastructure.Mapping
             CreateMap<ApplicationUser, UserProfileDto>()
              .ForMember(dest => dest.FullName,
                  opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
+             .ForMember(dest => dest.CreatedAt,
+                    opt => opt.MapFrom(src => src.CreatedAt))
              .ForMember(dest => dest.SavedPlacesCount,
-                 opt => opt.MapFrom(src => src.Favorites.Count))
-             .ForMember(dest => dest.ReviewsCount,
-                 opt => opt.MapFrom(src => src.Reviews.Count));
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.ReviewsCount,
+                    opt => opt.Ignore());
+
 
             // Review
             //CreateMap<Review, ReviewDto>();
 
-            //// User
-            //CreateMap<User, UserDto>();
         }
     }
 }

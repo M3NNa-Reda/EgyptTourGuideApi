@@ -107,6 +107,7 @@ namespace TourEgypt.API
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<IPlaceService, PlaceService>();
+            builder.Services.AddHostedService<PlaceMetricsUpdateJob>();
 
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAuthService, AuthService>();

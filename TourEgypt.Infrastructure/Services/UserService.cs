@@ -48,7 +48,7 @@ namespace TourEgypt.Infrastructure.Services
 
             var profile = _mapper.Map<UserProfileDto>(user);
             profile.SavedPlacesCount = await _unitOfWork.Favourites.CountByUserIdAsync(user.Id);
-
+            //profile.ReviewsCount = await _unitOfWork.Reviews.CountByUserIdAsync(user.Id);
             return profile;
         }
 
@@ -80,6 +80,9 @@ namespace TourEgypt.Infrastructure.Services
             user.PhoneNumber = dto.PhoneNumber ?? user.PhoneNumber;
             user.Country = dto.Country ?? user.Country;
             user.City = dto.City ?? user.City;
+            user.DateOfBirth = dto.DateOfBirth ?? user.DateOfBirth;
+            user.Gender = dto.Gender ?? user.Gender;
+            user.Bio = dto.Bio ?? user.Bio;
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -107,6 +110,17 @@ namespace TourEgypt.Infrastructure.Services
 
             if (image.Length > 2 * 1024 * 1024)
                 throw new ArgumentException("Maximum image size is 2 MB.");
+
+            if (!string.IsNullOrEmpty(user.ProfileImageUrl))
+            {
+                var oldImagePath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    user.ProfileImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+
+                if (File.Exists(oldImagePath))
+                    File.Delete(oldImagePath);
+            }
 
             var folderPath = Path.Combine(
                 Directory.GetCurrentDirectory(),
@@ -162,26 +176,7 @@ namespace TourEgypt.Infrastructure.Services
                 throw new InvalidOperationException(errors);
             }
         }
-        public async Task SaveUserInterestsAsync(List<int> interestIds)
-        {
-            var userId = GetCurrentUserId();
-
-            if (interestIds == null || !interestIds.Any())
-                return;
-
-            foreach (var categoryId in interestIds)
-            {
-                await _unitOfWork.UserInterests.AddAsync(new UserCategory
-                {
-                    UserId = userId,
-                    CategoryId = categoryId
-                });
-            }
-
-            await _unitOfWork.CompleteAsync();
-        }
-
-
+        
 
     }
 }
