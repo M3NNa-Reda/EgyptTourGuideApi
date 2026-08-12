@@ -48,7 +48,7 @@ namespace TourEgypt.Infrastructure.Services
 
             var profile = _mapper.Map<UserProfileDto>(user);
             profile.SavedPlacesCount = await _unitOfWork.Favourites.CountByUserIdAsync(user.Id);
-            //profile.ReviewsCount = await _unitOfWork.Reviews.CountByUserIdAsync(user.Id);
+            profile.ReviewsCount = await _unitOfWork.Reviews.CountByUserIdAsync(user.Id);
             return profile;
         }
 

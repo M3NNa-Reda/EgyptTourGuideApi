@@ -13,7 +13,7 @@ namespace TourEgypt.Data.Configurations
         {
             builder.HasKey(r => r.ReviewId);
 
-            builder.Property(r => r.Content).HasMaxLength(500);
+            builder.Property(r => r.Comment).HasMaxLength(500);
             builder.Property(r => r.Rating).IsRequired().HasPrecision(2, 1);
             builder.Property(r => r.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
 

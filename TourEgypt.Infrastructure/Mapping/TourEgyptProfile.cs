@@ -5,6 +5,7 @@ using System.Text;
 using TourEgypt.Core.DTOs.Category;
 using TourEgypt.Core.DTOs.City;
 using TourEgypt.Core.DTOs.Place;
+using TourEgypt.Core.DTOs.Review;
 using TourEgypt.Core.DTOs.User;
 using TourEgypt.Core.Entities;
 
@@ -43,7 +44,13 @@ namespace TourEgypt.Infrastructure.Mapping
 
 
             // Review
-            //CreateMap<Review, ReviewDto>();
+            CreateMap<Review, ReviewDto>()
+             .ForMember(dest => dest.Id,
+                opt => opt.MapFrom(src => src.ReviewId))
+             .ForMember(dest => dest.UserName, 
+                opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}".Trim()))
+             .ForMember(dest => dest.UserProfileImage, 
+                opt => opt.MapFrom(src => src.User.ProfileImageUrl));
 
         }
     }

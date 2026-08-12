@@ -13,9 +13,9 @@ namespace TourEgypt.Infrastructure.BackgroundJobs
     public class PlaceMetricsUpdateJob : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ILogger<CityMetricsUpdateJob> _logger;
+        private readonly ILogger<PlaceMetricsUpdateJob> _logger;
 
-        public PlaceMetricsUpdateJob(IServiceScopeFactory scopeFactory, ILogger<CityMetricsUpdateJob> logger)
+        public PlaceMetricsUpdateJob(IServiceScopeFactory scopeFactory, ILogger<PlaceMetricsUpdateJob> logger)
         {
             _scopeFactory = scopeFactory;
             _logger = logger;

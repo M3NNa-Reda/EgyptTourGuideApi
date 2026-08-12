@@ -124,6 +124,9 @@ namespace TourEgypt.API
             builder.Services.AddScoped<ICityService, CityService>();
             builder.Services.AddHostedService<CityMetricsUpdateJob>();
 
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
