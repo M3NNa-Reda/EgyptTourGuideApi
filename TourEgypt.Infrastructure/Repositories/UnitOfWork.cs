@@ -25,12 +25,12 @@ namespace TourEgypt.Infrastructure.Repositories
 
 
 
-        public UnitOfWork(AppDbContext context, 
+        public UnitOfWork(AppDbContext context,
             IPlaceRepository placeRepository,
             ICategoryRepository categoryRepository,
             IFavouriteRepository favouriteRepository,
             ICityRepository cityRepository,
-            ITourRepository tourRepository)
+            ITourRepository tourRepository,
             IReviewRepository reviewRepository)
         {
             _context = context;
