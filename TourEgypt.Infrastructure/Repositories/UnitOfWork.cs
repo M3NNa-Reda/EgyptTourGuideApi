@@ -30,7 +30,7 @@ namespace TourEgypt.Infrastructure.Repositories
             ICategoryRepository categoryRepository,
             IFavouriteRepository favouriteRepository,
             ICityRepository cityRepository,
-            ITourRepository tourRepository)
+            ITourRepository tourRepository,
             IReviewRepository reviewRepository)
         {
             _context = context;
