@@ -16,6 +16,7 @@ namespace TourEgypt.Core.Interfaces.Repositories
         IReviewRepository Reviews  { get; }
 
 
+        ITourRepository Tours { get; }
 
         Task<int> CompleteAsync(); 
     }

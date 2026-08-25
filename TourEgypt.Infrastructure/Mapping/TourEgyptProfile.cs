@@ -5,6 +5,7 @@ using System.Text;
 using TourEgypt.Core.DTOs.Category;
 using TourEgypt.Core.DTOs.City;
 using TourEgypt.Core.DTOs.Place;
+using TourEgypt.Core.DTOs.Tour;
 using TourEgypt.Core.DTOs.Review;
 using TourEgypt.Core.DTOs.User;
 using TourEgypt.Core.Entities;
@@ -21,6 +22,8 @@ namespace TourEgypt.Infrastructure.Mapping
             CreateMap<Place, NearbyPlaceDto>()
                 .ForMember(dest => dest.DistanceInKm, opt => opt.Ignore());
             CreateMap<SavePlaceDto, Place>();
+            CreateMap<Tour, TourDto>();
+            CreateMap<CreateTourDto, Tour>();
 
             // Category
             CreateMap<Category, CategoryDto>().ReverseMap();

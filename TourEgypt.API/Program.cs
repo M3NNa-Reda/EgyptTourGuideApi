@@ -122,10 +122,13 @@ namespace TourEgypt.API
                 });
 
             builder.Services.AddScoped<IPlaceRepository, PlaceRepository>();
+            builder.Services.AddScoped<ITourRepository, TourRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<IPlaceService, PlaceService>();
             builder.Services.AddHostedService<PlaceMetricsUpdateJob>();
+
+            builder.Services.AddScoped<ITourService, TourService>();
 
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -147,6 +150,7 @@ namespace TourEgypt.API
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 
             builder.Services.AddAutoMapper(cfg =>
             {

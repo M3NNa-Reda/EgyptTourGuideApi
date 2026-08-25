@@ -21,6 +21,8 @@ namespace TourEgypt.Infrastructure.Repositories
         public IReviewRepository Reviews { get; private set; }
 
 
+        public ITourRepository Tours { get; private set; }
+
 
 
         public UnitOfWork(AppDbContext context, 
@@ -28,6 +30,7 @@ namespace TourEgypt.Infrastructure.Repositories
             ICategoryRepository categoryRepository,
             IFavouriteRepository favouriteRepository,
             ICityRepository cityRepository,
+            ITourRepository tourRepository)
             IReviewRepository reviewRepository)
         {
             _context = context;
@@ -36,6 +39,7 @@ namespace TourEgypt.Infrastructure.Repositories
             Favourites = favouriteRepository;
             Categories = categoryRepository;
             Cities = cityRepository;
+            Tours = tourRepository;
             Reviews = reviewRepository;
         }
 
