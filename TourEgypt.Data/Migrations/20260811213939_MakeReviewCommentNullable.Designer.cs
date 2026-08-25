@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TourEgypt.Data.Context;
 
@@ -11,9 +12,11 @@ using TourEgypt.Data.Context;
 namespace TourEgypt.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260811213939_MakeReviewCommentNullable")]
+    partial class MakeReviewCommentNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,57 +156,6 @@ namespace TourEgypt.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Tour", b =>
-                {
-                    b.Property<int>("TourId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TourId"));
-
-                    b.Property<double>("AverageRating")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("DurationInHours")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<int>("PlaceId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("ReviewsCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TourType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("TourId");
-
-                    b.HasIndex("PlaceId");
-
-                    b.ToTable("Tours");
                 });
 
             modelBuilder.Entity("TourEgypt.Core.Entities.ApplicationUser", b =>
@@ -599,17 +551,6 @@ namespace TourEgypt.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Tour", b =>
-                {
-                    b.HasOne("TourEgypt.Core.Entities.Place", "Place")
-                        .WithMany("Tours")
-                        .HasForeignKey("PlaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Place");
-                });
-
             modelBuilder.Entity("TourEgypt.Core.Entities.Favorite", b =>
                 {
                     b.HasOne("TourEgypt.Core.Entities.Place", "Place")
@@ -744,8 +685,6 @@ namespace TourEgypt.Data.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Tours");
                 });
 #pragma warning restore 612, 618
         }

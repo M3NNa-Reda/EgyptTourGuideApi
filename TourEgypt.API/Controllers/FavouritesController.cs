@@ -16,14 +16,14 @@ namespace TourEgypt.API.Controllers
             _favouriteService = favouriteService;
         }
 
-        [HttpPost("{placeId}")]
+        [HttpPost("{placeId:int}")]
         public async Task<IActionResult> AddFavourite(int placeId)
         {
             await _favouriteService.AddFavouriteAsync(placeId);
             return Ok(new { message = "Added to favourites" });
         }
 
-        [HttpDelete("{placeId}")]
+        [HttpDelete("{placeId:int}")]
         public async Task<IActionResult> RemoveFavourite(int placeId)
         {
             await _favouriteService.RemoveFavouriteAsync(placeId);
@@ -37,11 +37,11 @@ namespace TourEgypt.API.Controllers
             return Ok(favourites);
         }
 
-        [HttpGet("{placeId}/is-favourite")]
+        [HttpGet("{placeId:int}/is-saved")]
         public async Task<IActionResult> IsFavourite(int placeId)
         {
             var result = await _favouriteService.IsFavouriteAsync(placeId);
-            return Ok(new { isFavourite = result });
+            return Ok(new { isSaved = result });
         }
     }
 }

@@ -13,6 +13,7 @@ namespace TourEgypt.Core.DTOs.Place
         public string Address { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
         public double AverageRating { get; set; }
+        public int ReviewsCount { get; set; }
         public bool IsSaved { get; set; }
         public double DistanceInKm { get; set; }
     }

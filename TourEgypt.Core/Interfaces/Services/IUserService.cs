@@ -14,8 +14,6 @@ namespace TourEgypt.Core.Interfaces.Services
 
         Task UpdateProfileImageAsync(IFormFile image);
 
-        Task SaveUserInterestsAsync(List<int> interestIds);
-
         Task DeleteProfileImageAsync();
     }
 }

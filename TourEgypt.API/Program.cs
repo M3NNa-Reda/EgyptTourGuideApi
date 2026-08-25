@@ -7,6 +7,7 @@ using System.Text;
 using TourEgypt.API.Middlewares;
 using TourEgypt.Core;
 using TourEgypt.Core.Common;
+using TourEgypt.Core.DTOs.Shared;
 using TourEgypt.Core.Entities;
 using TourEgypt.Core.Interfaces.Repositories;
 using TourEgypt.Core.Interfaces.Services;
@@ -101,6 +102,23 @@ namespace TourEgypt.API
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Signingkey)),
                         ClockSkew = TimeSpan.Zero
                     };
+                    option.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = async context =>
+                        {
+                            context.HandleResponse();
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+
+                            var response = new ApiErrorResponse
+                            {
+                                StatusCode = 401,
+                                Message = "You are not authorized to access this resource."
+                            };
+
+                            await context.Response.WriteAsJsonAsync(response);
+                        }
+                    };
                 });
 
             builder.Services.AddScoped<IPlaceRepository, PlaceRepository>();
@@ -108,6 +126,7 @@ namespace TourEgypt.API
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<IPlaceService, PlaceService>();
+            builder.Services.AddHostedService<PlaceMetricsUpdateJob>();
 
             builder.Services.AddScoped<ITourService, TourService>();
 
@@ -125,6 +144,9 @@ namespace TourEgypt.API
             builder.Services.AddScoped<ICityRepository, CityRepository>();
             builder.Services.AddScoped<ICityService, CityService>();
             builder.Services.AddHostedService<CityMetricsUpdateJob>();
+
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -145,18 +167,16 @@ namespace TourEgypt.API
 
                 await IdentitySeeder.SeedAsync(roleManager, userManager);
             }
-
+            app.UseMiddleware<ExceptionMiddleware>();
             // ---- Swagger middleware ----
-            if (app.Environment.IsDevelopment())
-            {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            
             // -----------------------------
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseMiddleware<ExceptionMiddleware>();
+            
             app.UseAuthentication();
             app.UseAuthorization();
 

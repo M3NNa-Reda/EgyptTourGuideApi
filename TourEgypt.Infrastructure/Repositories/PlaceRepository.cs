@@ -55,5 +55,35 @@ namespace TourEgypt.Infrastructure.Repositories
                 .Take(pageSize)
                 .ToListAsync();
         }
+
+        public async Task<IReadOnlyList<Place>> GetAllPlacesWithReviewsAsync()
+        {
+            return await _context.Places
+                .Include(p => p.Reviews)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Place>> GetTopPlacesAsync(int page, int pageSize)
+        {
+            return await _context.Places
+                .AsNoTracking()
+                .OrderByDescending(p => p.AverageRating)
+                .ThenByDescending(p => p.ReviewsCount)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Place>> GetByCityAsync(int cityId, int page, int pageSize)
+        {
+            return await _context.Places
+                .AsNoTracking()
+                .Where(p => p.CityId == cityId)
+                .OrderByDescending(p => p.AverageRating)
+                .ThenByDescending(p => p.ReviewsCount)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
     }
 }

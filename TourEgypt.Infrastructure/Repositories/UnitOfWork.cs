@@ -18,6 +18,8 @@ namespace TourEgypt.Infrastructure.Repositories
         public IFavouriteRepository Favourites { get; private set; }
         public ICategoryRepository Categories { get; private set; }
         public ICityRepository Cities { get; private set; }
+        public IReviewRepository Reviews { get; private set; }
+
 
         public ITourRepository Tours { get; private set; }
 
@@ -29,6 +31,7 @@ namespace TourEgypt.Infrastructure.Repositories
             IFavouriteRepository favouriteRepository,
             ICityRepository cityRepository,
             ITourRepository tourRepository)
+            IReviewRepository reviewRepository)
         {
             _context = context;
             Places = placeRepository;
@@ -37,6 +40,7 @@ namespace TourEgypt.Infrastructure.Repositories
             Categories = categoryRepository;
             Cities = cityRepository;
             Tours = tourRepository;
+            Reviews = reviewRepository;
         }
 
         public async Task<int> CompleteAsync()

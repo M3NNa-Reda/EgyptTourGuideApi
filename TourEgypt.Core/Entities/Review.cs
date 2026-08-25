@@ -8,13 +8,14 @@ namespace TourEgypt.Core.Entities
     {
 
         public int ReviewId { get; set; }
-        public string Content { get; set; } = string.Empty;
+        public string? Comment { get; set; }
         public int Rating { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public int UserId { get; set; }
-        public ApplicationUser User { get; set; } = new ApplicationUser();
+        public ApplicationUser User { get; set; } = null!;
         public int PlaceId { get; set; }
-        public Place Place { get; set; } = new Place();
+        public Place Place { get; set; } = null!;
+      
 
 
     }
