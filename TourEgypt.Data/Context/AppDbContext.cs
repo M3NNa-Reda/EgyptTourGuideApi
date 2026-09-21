@@ -26,6 +26,8 @@ namespace TourEgypt.Data.Context
 
         public DbSet<UserCategory> UserCategories { get; set; }
 
-        
+        public DbSet<Tour> Tours { get; set; }
+
+
     }
 }

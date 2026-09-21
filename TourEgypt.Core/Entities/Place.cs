@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,13 +18,17 @@ namespace TourEgypt.Core.Entities
         public string? CuisineType { get; set; }
         public double AverageRating { get; set; }
         public int ReviewsCount { get; set; }
+        public int? FavoriteCount { get; set; }
+
         public int CityId { get; set; }
         public int CategoryId { get; set; }
         public City City { get; set; } = null!;
         public Category Category { get; set; } = null!;
+
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
         public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+        public ICollection<Tour> Tours { get; set; } = new List<Tour>();
 
 
 

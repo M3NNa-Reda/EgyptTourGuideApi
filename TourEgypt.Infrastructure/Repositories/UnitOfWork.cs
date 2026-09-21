@@ -15,11 +15,32 @@ namespace TourEgypt.Infrastructure.Repositories
         public IPlaceRepository Places { get; private set; }
         public IGenericRepository<UserCategory> UserInterests { get; private set; }
 
-        public UnitOfWork(AppDbContext context, IPlaceRepository placeRepository)
+        public IFavouriteRepository Favourites { get; private set; }
+        public ICategoryRepository Categories { get; private set; }
+        public ICityRepository Cities { get; private set; }
+        public IReviewRepository Reviews { get; private set; }
+
+
+        public ITourRepository Tours { get; private set; }
+
+
+
+        public UnitOfWork(AppDbContext context, 
+            IPlaceRepository placeRepository,
+            ICategoryRepository categoryRepository,
+            IFavouriteRepository favouriteRepository,
+            ICityRepository cityRepository,
+            ITourRepository tourRepository,
+            IReviewRepository reviewRepository)
         {
             _context = context;
             Places = placeRepository;
             UserInterests = new GenericRepository<UserCategory>(_context);
+            Favourites = favouriteRepository;
+            Categories = categoryRepository;
+            Cities = cityRepository;
+            Tours = tourRepository;
+            Reviews = reviewRepository;
         }
 
         public async Task<int> CompleteAsync()

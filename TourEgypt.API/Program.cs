@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +7,13 @@ using System.Text;
 using TourEgypt.API.Middlewares;
 using TourEgypt.Core;
 using TourEgypt.Core.Common;
+using TourEgypt.Core.DTOs.Shared;
 using TourEgypt.Core.Entities;
 using TourEgypt.Core.Interfaces.Repositories;
 using TourEgypt.Core.Interfaces.Services;
 using TourEgypt.Data.Context;
 using TourEgypt.Infrastructure;
+using TourEgypt.Infrastructure.BackgroundJobs;
 using TourEgypt.Infrastructure.Mapping;
 using TourEgypt.Infrastructure.Repositories;
 using TourEgypt.Infrastructure.Seed;
@@ -31,24 +32,46 @@ namespace TourEgypt.API
 
             // Add services to the container.
 
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            //builder.Services.AddOpenApi();
             builder.Services.AddControllers();
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString")));
 
             builder.Services.AddHttpContextAccessor();
 
+            // ---- Swagger services ----
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TourEgypt API", Version = "v1" });
 
-            var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
+                // عشان تقدر تبعت الـ JWT Token من واجهة Swagger نفسها
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "أدخل التوكن بالشكل: Bearer {token}"
+                });
+
+                c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                });
+            });
+            // ---------------------------
+
+            var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()
+                ?? throw new InvalidOperationException("Jwt section is missing in configuration.");
 
             builder.Services.AddSingleton(jwtOptions);
 
-            
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
             {
                 options.Lockout.AllowedForNewUsers = true;
-                options.Lockout.DefaultLockoutTimeSpan= TimeSpan.FromMinutes(5);
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
 
                 options.Password.RequireDigit = true;
@@ -56,7 +79,7 @@ namespace TourEgypt.API
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
-                
+
 
                 options.User.RequireUniqueEmail = true;
             })
@@ -79,20 +102,56 @@ namespace TourEgypt.API
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Signingkey)),
-                        ClockSkew = TimeSpan.Zero 
+                        ClockSkew = TimeSpan.Zero
+                    };
+                    option.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = async context =>
+                        {
+                            context.HandleResponse();
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+
+                            var response = new ApiErrorResponse
+                            {
+                                StatusCode = 401,
+                                Message = "You are not authorized to access this resource."
+                            };
+
+                            await context.Response.WriteAsJsonAsync(response);
+                        }
                     };
                 });
 
             builder.Services.AddScoped<IPlaceRepository, PlaceRepository>();
+            builder.Services.AddScoped<ITourRepository, TourRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
+
             builder.Services.AddScoped<IPlaceService, PlaceService>();
+            builder.Services.AddHostedService<PlaceMetricsUpdateJob>();
+
+            builder.Services.AddScoped<ITourService, TourService>();
 
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
 
+            builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
+            builder.Services.AddScoped<IFavouriteService, FavouriteService>();
+
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+            builder.Services.AddScoped<ICityRepository, CityRepository>();
+            builder.Services.AddScoped<ICityService, CityService>();
+            builder.Services.AddHostedService<CityMetricsUpdateJob>();
+
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 
             builder.Services.AddAutoMapper(cfg =>
@@ -100,6 +159,7 @@ namespace TourEgypt.API
                 cfg.AddProfile<TourEgyptProfile>();
             });
 
+<<<<<<< HEAD
 
 
             builder.Services.AddEndpointsApiExplorer();
@@ -168,6 +228,8 @@ namespace TourEgypt.API
                         cancellationToken);
                 };
             });
+=======
+>>>>>>> origin/master
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
             {
@@ -178,22 +240,25 @@ namespace TourEgypt.API
 
                 await IdentitySeeder.SeedAsync(roleManager, userManager);
             }
-
-            //catches exceptions thrown in the following middlewares so it must come early
-            if (app.Environment.IsDevelopment())
-            {
+            app.UseMiddleware<ExceptionMiddleware>();
+            // ---- Swagger middleware ----
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            
+            // -----------------------------
 
             app.UseHttpsRedirection();
             app.UseRouting();
+<<<<<<< HEAD
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseRateLimiter();
+=======
+            
+>>>>>>> origin/master
             app.UseAuthentication();
             app.UseAuthorization();
-           
-            
+
+
             app.MapControllers();
 
             app.Run();

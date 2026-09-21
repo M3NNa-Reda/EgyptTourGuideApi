@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using TourEgypt.Core.DTOs.User;
 using TourEgypt.Core.Entities;
 using TourEgypt.Core.Interfaces.Repositories;
@@ -14,16 +15,18 @@ namespace TourEgypt.Infrastructure.Services
 {
     public class UserService : IUserService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(IHttpContextAccessor httpContextAccessor,
+        public UserService(
+            ICurrentUserService currentUserService,
             IMapper mapper,
-            UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork)
+            UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _currentUserService = currentUserService;
             _mapper = mapper;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
@@ -43,19 +46,22 @@ namespace TourEgypt.Infrastructure.Services
         {
             var user = await GetCurrentUserAsync();
 
-            return _mapper.Map<UserProfileDto>(user);
+            var profile = _mapper.Map<UserProfileDto>(user);
+            profile.SavedPlacesCount = await _unitOfWork.Favourites.CountByUserIdAsync(user.Id);
+            profile.ReviewsCount = await _unitOfWork.Reviews.CountByUserIdAsync(user.Id);
+            return profile;
         }
 
         private int GetCurrentUserId()
         {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = _currentUserService.UserId;
 
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            if (!userId.HasValue)
             {
                 throw new UnauthorizedAccessException("User is not authenticated or Token is invalid.");
             }
 
-            return userId;
+            return userId.Value;
         }
 
 
@@ -74,6 +80,9 @@ namespace TourEgypt.Infrastructure.Services
             user.PhoneNumber = dto.PhoneNumber ?? user.PhoneNumber;
             user.Country = dto.Country ?? user.Country;
             user.City = dto.City ?? user.City;
+            user.DateOfBirth = dto.DateOfBirth ?? user.DateOfBirth;
+            user.Gender = dto.Gender ?? user.Gender;
+            user.Bio = dto.Bio ?? user.Bio;
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -101,6 +110,17 @@ namespace TourEgypt.Infrastructure.Services
 
             if (image.Length > 2 * 1024 * 1024)
                 throw new ArgumentException("Maximum image size is 2 MB.");
+
+            if (!string.IsNullOrEmpty(user.ProfileImageUrl))
+            {
+                var oldImagePath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    user.ProfileImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+
+                if (File.Exists(oldImagePath))
+                    File.Delete(oldImagePath);
+            }
 
             var folderPath = Path.Combine(
                 Directory.GetCurrentDirectory(),
@@ -156,26 +176,7 @@ namespace TourEgypt.Infrastructure.Services
                 throw new InvalidOperationException(errors);
             }
         }
-        public async Task SaveUserInterestsAsync(List<int> interestIds)
-        {
-            var userId = GetCurrentUserId();
-
-            if (interestIds == null || !interestIds.Any())
-                return;
-
-            foreach (var categoryId in interestIds)
-            {
-                await _unitOfWork.UserInterests.AddAsync(new UserCategory
-                {
-                    UserId = userId,
-                    CategoryId = categoryId
-                });
-            }
-
-            await _unitOfWork.CompleteAsync();
-        }
-
-
+        
 
     }
 }

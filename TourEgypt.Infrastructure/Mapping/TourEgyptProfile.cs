@@ -5,6 +5,8 @@ using System.Text;
 using TourEgypt.Core.DTOs.Category;
 using TourEgypt.Core.DTOs.City;
 using TourEgypt.Core.DTOs.Place;
+using TourEgypt.Core.DTOs.Tour;
+using TourEgypt.Core.DTOs.Review;
 using TourEgypt.Core.DTOs.User;
 using TourEgypt.Core.Entities;
 
@@ -20,12 +22,14 @@ namespace TourEgypt.Infrastructure.Mapping
             CreateMap<Place, NearbyPlaceDto>()
                 .ForMember(dest => dest.DistanceInKm, opt => opt.Ignore());
             CreateMap<SavePlaceDto, Place>();
+            CreateMap<Tour, TourDto>();
+            CreateMap<CreateTourDto, Tour>();
 
             // Category
-            CreateMap<Category, CategoryDto>();
+            CreateMap<Category, CategoryDto>().ReverseMap();
 
             // City
-            CreateMap<City, CityDto>();
+            CreateMap<City, CityDto>().ReverseMap();
             //ApplicationUser
             CreateMap<ApplicationUser, UserDto>()
             .ForMember(dest => dest.FullName,
@@ -34,16 +38,23 @@ namespace TourEgypt.Infrastructure.Mapping
             CreateMap<ApplicationUser, UserProfileDto>()
              .ForMember(dest => dest.FullName,
                  opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
+             .ForMember(dest => dest.CreatedAt,
+                    opt => opt.MapFrom(src => src.CreatedAt))
              .ForMember(dest => dest.SavedPlacesCount,
-                 opt => opt.MapFrom(src => src.Favorites.Count))
-             .ForMember(dest => dest.ReviewsCount,
-                 opt => opt.MapFrom(src => src.Reviews.Count));
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.ReviewsCount,
+                    opt => opt.Ignore());
+
 
             // Review
-            //CreateMap<Review, ReviewDto>();
+            CreateMap<Review, ReviewDto>()
+             .ForMember(dest => dest.Id,
+                opt => opt.MapFrom(src => src.ReviewId))
+             .ForMember(dest => dest.UserName, 
+                opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}".Trim()))
+             .ForMember(dest => dest.UserProfileImage, 
+                opt => opt.MapFrom(src => src.User.ProfileImageUrl));
 
-            //// User
-            //CreateMap<User, UserDto>();
         }
     }
 }

@@ -155,6 +155,57 @@ namespace TourEgypt.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Tour", b =>
+                {
+                    b.Property<int>("TourId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TourId"));
+
+                    b.Property<double>("AverageRating")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("DurationInHours")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("PlaceId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ReviewsCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TourType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("TourId");
+
+                    b.HasIndex("PlaceId");
+
+                    b.ToTable("Tours");
+                });
+
             modelBuilder.Entity("TourEgypt.Core.Entities.ApplicationUser", b =>
                 {
                     b.Property<int>("Id")
@@ -272,7 +323,8 @@ namespace TourEgypt.Data.Migrations
 
                     b.Property<string>("IconUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -280,6 +332,9 @@ namespace TourEgypt.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CategoryId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -366,6 +421,9 @@ namespace TourEgypt.Data.Migrations
                     b.Property<int?>("DurationInDays")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FavoriteCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -406,8 +464,7 @@ namespace TourEgypt.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
 
-                    b.Property<string>("Content")
-                        .IsRequired()
+                    b.Property<string>("Comment")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -542,6 +599,17 @@ namespace TourEgypt.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Tour", b =>
+                {
+                    b.HasOne("TourEgypt.Core.Entities.Place", "Place")
+                        .WithMany("Tours")
+                        .HasForeignKey("PlaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Place");
+                });
+
             modelBuilder.Entity("TourEgypt.Core.Entities.Favorite", b =>
                 {
                     b.HasOne("TourEgypt.Core.Entities.Place", "Place")
@@ -566,7 +634,7 @@ namespace TourEgypt.Data.Migrations
                     b.HasOne("TourEgypt.Core.Entities.Category", "Category")
                         .WithMany("Places")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TourEgypt.Core.Entities.City", "City")
@@ -676,6 +744,8 @@ namespace TourEgypt.Data.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("Tours");
                 });
 #pragma warning restore 612, 618
         }

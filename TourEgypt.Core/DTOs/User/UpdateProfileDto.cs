@@ -7,7 +7,7 @@ namespace TourEgypt.Core.DTOs.User
 {
     public class UpdateProfileDto
     {
-        public string FullName { get; set; } = string.Empty;
+        public string? FullName { get; set; } = string.Empty;
         public string? PhoneNumber { get; set; }
 
         public string? Country { get; set; }

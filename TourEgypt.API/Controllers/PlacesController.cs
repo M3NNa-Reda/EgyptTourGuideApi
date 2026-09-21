@@ -73,5 +73,19 @@ namespace TourEgypt.API.Controllers
             await _placeService.DeletePlaceAsync(id);
             return NoContent();
         }
+
+        [HttpGet("top")]
+        public async Task<IActionResult> GetTopPlaces([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            var places = await _placeService.GetTopPlacesAsync(page, pageSize);
+            return Ok(places);
+        }
+
+        [HttpGet("city/{cityId}")]
+        public async Task<IActionResult> GetByCity(int cityId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            var places = await _placeService.GetPlacesByCityAsync(cityId, page, pageSize);
+            return Ok(places);
+        }
     }
 }
