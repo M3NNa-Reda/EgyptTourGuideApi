@@ -19,7 +19,6 @@ using TourEgypt.Infrastructure.Repositories;
 using TourEgypt.Infrastructure.Seed;
 using TourEgypt.Infrastructure.Services;
 using System.Threading.RateLimiting;
-using TourEgypt.Core.DTOs.Shared;   
 
 
 namespace TourEgypt.API
@@ -52,7 +51,7 @@ namespace TourEgypt.API
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "أدخل التوكن بالشكل: Bearer {token}"
+                    Description = "الصق الـ JWT token فقط (من غير كلمة Bearer)."
                 });
 
                 c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
@@ -159,30 +158,6 @@ namespace TourEgypt.API
                 cfg.AddProfile<TourEgyptProfile>();
             });
 
-<<<<<<< HEAD
-
-
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TourEgypt API", Version = "v1" });
-
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Paste the JWT token only (without the word Bearer)."
-                });
-
-                c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-                {
-                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
-                });
-            });
-
 
             builder.Services.AddRateLimiter(options =>
             {
@@ -228,8 +203,7 @@ namespace TourEgypt.API
                         cancellationToken);
                 };
             });
-=======
->>>>>>> origin/master
+
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
             {
@@ -241,20 +215,13 @@ namespace TourEgypt.API
                 await IdentitySeeder.SeedAsync(roleManager, userManager);
             }
             app.UseMiddleware<ExceptionMiddleware>();
-            // ---- Swagger middleware ----
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            
-            // -----------------------------
-
+            app.UseSwagger();
+            app.UseSwaggerUI();
             app.UseHttpsRedirection();
             app.UseRouting();
-<<<<<<< HEAD
-            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseRateLimiter();
-=======
-            
->>>>>>> origin/master
+
             app.UseAuthentication();
             app.UseAuthorization();
 
