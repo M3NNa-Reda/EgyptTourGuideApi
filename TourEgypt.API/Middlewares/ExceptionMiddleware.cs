@@ -53,6 +53,11 @@ namespace TourEgypt.API.Middlewares
                     response.Message = exception.Message;
                     break;
 
+                case InvalidOperationException:
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    response.Message = exception.Message;
+                    break;
+
                 default:
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     response.Message = "An unexpected error occurred.";
@@ -60,7 +65,6 @@ namespace TourEgypt.API.Middlewares
             }
 
             response.StatusCode = context.Response.StatusCode;
-
 
             var json = JsonSerializer.Serialize(response);
 

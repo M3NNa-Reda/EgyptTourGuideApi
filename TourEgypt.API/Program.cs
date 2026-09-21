@@ -18,6 +18,8 @@ using TourEgypt.Infrastructure.Mapping;
 using TourEgypt.Infrastructure.Repositories;
 using TourEgypt.Infrastructure.Seed;
 using TourEgypt.Infrastructure.Services;
+using System.Threading.RateLimiting;
+using TourEgypt.Core.DTOs.Shared;   
 
 
 namespace TourEgypt.API
@@ -157,6 +159,77 @@ namespace TourEgypt.API
                 cfg.AddProfile<TourEgyptProfile>();
             });
 
+<<<<<<< HEAD
+
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TourEgypt API", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Paste the JWT token only (without the word Bearer)."
+                });
+
+                c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                });
+            });
+
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                options.AddPolicy("auth", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 10,
+                            Window = TimeSpan.FromMinutes(1),
+                            QueueLimit = 0
+                        }));
+
+                options.AddPolicy("otp", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 10,
+                            Window = TimeSpan.FromMinutes(1),
+                            QueueLimit = 0
+                        }));
+
+                options.OnRejected = async (context, cancellationToken) =>
+                {
+                    if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                    {
+                        context.HttpContext.Response.Headers.RetryAfter =
+                            ((int)Math.Ceiling(retryAfter.TotalSeconds)).ToString();
+                    }
+
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    context.HttpContext.Response.ContentType = "application/json";
+
+                    await context.HttpContext.Response.WriteAsJsonAsync(
+                        new ApiErrorResponse
+                        {
+                            StatusCode = 429,
+                            Message = "Too many requests. Please wait a minute and try again."
+                        },
+                        cancellationToken);
+                };
+            });
+=======
+>>>>>>> origin/master
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
             {
@@ -176,7 +249,12 @@ namespace TourEgypt.API
 
             app.UseHttpsRedirection();
             app.UseRouting();
+<<<<<<< HEAD
+            app.UseMiddleware<ExceptionMiddleware>();
+            app.UseRateLimiter();
+=======
             
+>>>>>>> origin/master
             app.UseAuthentication();
             app.UseAuthorization();
 

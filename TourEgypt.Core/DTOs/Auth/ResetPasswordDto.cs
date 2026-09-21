@@ -7,10 +7,17 @@ namespace TourEgypt.Core.DTOs.Auth
 {
     public class ResetPasswordDto
     {
-
-
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
+        [Required]
+        [MinLength(6)]
+        [MaxLength(100)]
         public string NewPassword { get; set; } = string.Empty;
+
+        [Required]
+        [Compare(nameof(NewPassword), ErrorMessage = "Passwords do not match.")]
+        public string ConfirmNewPassword { get; set; } = string.Empty;
     }
 }
